@@ -8,6 +8,8 @@ public class ConsoleWriter(TextWriter @out) : TextWriter
 
 	private readonly TextWriter _out = @out;
 
+	private bool _firstOccurenceTriggered = false;
+
 	public override Encoding Encoding => Encoding.Default;
 
 	public override void Write(string? value)
@@ -18,12 +20,12 @@ public class ConsoleWriter(TextWriter @out) : TextWriter
 		if (value != null)
 			_lines.Add(value);
 
-		if (Console.GetCursorPosition().Top + 1 == Console.BufferHeight)
+		if (Console.GetCursorPosition().Top == Console.BufferHeight - 1)
 		{
-			Console.Clear();
-			Console.SetCursorPosition(0, 0);
-			foreach (string line in _lines)
-				_out.WriteLine(line);
+			Console.SetBufferSize(Console.BufferWidth, Console.BufferHeight + 1);
+
+			//foreach (string line in _lines)
+			//	_out.WriteLine(line);
 		}
 		_out.WriteLine(value);
 	}
