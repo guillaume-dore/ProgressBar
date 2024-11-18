@@ -4,23 +4,12 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-		Console.CursorVisible = false;
-		var stream = Console.In;
+		using var progressBar = new ProgressBar();
 		for (int i = 0; i < 100; i++)
 		{
 			Console.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
-			RenderProgress(i);
-			Thread.Sleep(100);
-		}
-
-		static void RenderProgress(int i)
-		{
-			int topPosition = Console.GetCursorPosition().Top;
-			Console.SetCursorPosition(0, Console.WindowHeight - 1);
-			Console.Write(new string(' ', Console.BufferWidth));
-			Console.SetCursorPosition(0, Console.WindowHeight - 1);
-			Console.Write($"Action in progress... {i} / 100");
-			Console.SetCursorPosition(0, topPosition);
+			progressBar.Render(i);
+			Thread.Sleep(200);
 		}
 
 		//Console.CursorVisible = false;
@@ -29,12 +18,11 @@ internal class Program
 		//var cts = new CancellationTokenSource();
 		//Task.Run(() =>
 		//{
-		//	for (int i = 0; i < 100; i++)
-		//	{
-		//		var height = Console.WindowHeight;
-		//		Console.WriteLine($"Task running line {i + 1} in execution...");
-		//		Console.
-		//	}
+		//	//for (int i = 0; i < 100; i++)
+		//	//{
+		//	//	var height = Console.WindowHeight;
+		//	//	Console.WriteLine($"Task running line {i + 1} in execution...");
+		//	//}
 		//	int cpt = 0;
 		//	while (true)
 		//	{
