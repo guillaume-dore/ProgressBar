@@ -4,10 +4,20 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-		using (var progressBar = new ProgressBar())
+		using (var progressBar = new ProgressBar(false))
 		{
 			for (int i = 0; i < 100; i++)
 			{
+				if (i == 35)
+				{
+					progressBar.Start();
+				}
+				if (i == 51)
+					progressBar.Stop();
+
+				if (i == 68)
+					progressBar.Start();
+
 				progressBar.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
 				progressBar.Render(i, $"step {i} of 100");
 				Thread.Sleep(200);

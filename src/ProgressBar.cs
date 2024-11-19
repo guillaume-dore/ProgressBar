@@ -10,14 +10,21 @@ public class ProgressBar : IDisposable
 
 	private string? _optionalText;
 
-	public ProgressBar()
+	private bool _visible = false;
+
+	public ProgressBar(bool start = true)
 	{
-		Console.CursorVisible = false;
+		Console.CursorVisible = !start;
+		this._visible = start;
 	}
 
-	public ProgressBar(string text, string? optionalText = null) : this()
+	public ProgressBar(string text, bool start = true) : this(start)
 	{
 		_text = text;
+	}
+
+	public ProgressBar(string text, string optionalText, bool start = true) : this(text, start)
+	{
 		_optionalText = optionalText;
 	}
 
@@ -30,13 +37,35 @@ public class ProgressBar : IDisposable
 		GC.SuppressFinalize(this);
 	}
 
+	public void Start()
+	{
+		Console.CursorVisible = false;
+		this._visible = true;
+		int valueTop = Console.GetCursorPosition().Top;
+		if (valueTop == Console.BufferHeight - 1)
+		{
+			Console.SetCursorPosition(0, Console.BufferHeight - 1);
+			Render(10, "starting...");
+		}
+	}
+
+
+	public void Stop()
+	{
+		this._visible = false;
+		Console.SetCursorPosition(0, Console.BufferHeight - 1);
+		Console.Write(new string(' ', Console.BufferWidth));
+		Console.SetCursorPosition(0, Console.BufferHeight - 1);
+		Console.CursorVisible = true;
+	}
+
 	public void WriteLine(string? value)
 	{
 		if (value == null)
 			return;
 
 		int valueTop = Console.GetCursorPosition().Top;
-		if (valueTop == Console.BufferHeight - 1)
+		if (valueTop == Console.BufferHeight - 1 && this._visible)
 		{
 			Console.SetCursorPosition(0, Console.BufferHeight - 1);
 			Console.Write(Environment.NewLine);
@@ -51,6 +80,9 @@ public class ProgressBar : IDisposable
 
 	public void Render(int i, string? optionalText = null)
 	{
+		if (!this._visible)
+			return;
+
 		_optionalText = optionalText;
 		int topPosition = Console.GetCursorPosition().Top;
 		Console.SetCursorPosition(0, Console.BufferHeight - 1);
