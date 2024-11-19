@@ -4,13 +4,22 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-		using var progressBar = new ProgressBar();
-		for (int i = 0; i < 100; i++)
+		using (var progressBar = new ProgressBar())
 		{
-			progressBar.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
-			progressBar.Render(i);
-			Thread.Sleep(200);
+			for (int i = 0; i < 100; i++)
+			{
+				progressBar.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
+				progressBar.Render(i);
+				Thread.Sleep(200);
+			}
 		}
+
+
+		Console.WriteLine("test");
+		Console.WriteLine("test");
+		Console.WriteLine("test");
+		Console.WriteLine("test");
+		Console.WriteLine("test");
 
 		//Console.CursorVisible = false;
 		//string loading = "#..........";
