@@ -7,7 +7,7 @@ internal class Program
 		using var progressBar = new ProgressBar();
 		for (int i = 0; i < 100; i++)
 		{
-			Console.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
+			progressBar.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
 			progressBar.Render(i);
 			Thread.Sleep(200);
 		}
