@@ -43,6 +43,7 @@ public class ProgressBar : IDisposable
 			var cursorPosition = Console.GetCursorPosition();
 			Console.SetCursorPosition(0, valueTop - 1);
 			Console.Write(value.PadRight(Console.BufferWidth));
+			Console.SetCursorPosition(0, Console.BufferHeight - 1);
 		}
 		else
 			Console.WriteLine(value);
@@ -52,7 +53,6 @@ public class ProgressBar : IDisposable
 	{
 		_optionalText = optionalText;
 		int topPosition = Console.GetCursorPosition().Top;
-		Console.SetCursorPosition(0, Console.BufferHeight - 1);
 		Console.SetCursorPosition(0, Console.BufferHeight - 1);
 		DrawProgressBar(i);
 		Console.SetCursorPosition(0, topPosition);
