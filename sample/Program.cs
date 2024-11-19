@@ -9,7 +9,7 @@ internal class Program
 			for (int i = 0; i < 100; i++)
 			{
 				progressBar.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
-				progressBar.Render(i);
+				progressBar.Render(i, $"step {i} of 100");
 				Thread.Sleep(200);
 			}
 		}

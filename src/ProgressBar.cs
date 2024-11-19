@@ -60,11 +60,12 @@ public class ProgressBar : IDisposable
 
 	public void DrawProgressBar(int i)
 	{
-		string progressStart = _text + $": [{(int)Math.Ceiling(i / 50.0 * 50):00}%] ";
+		var percentage = (int)Math.Ceiling(i / 50.0 * 50);
+		string progressStart = _text + $": [{percentage:00}%] ";
 		string progressEnd = " " + _optionalText;
-		int progressWidth = Console.BufferWidth - (progressStart.Length + progressEnd.Length);
-		string progressCompleted = new string(_loadingIndicator, (int)Math.Ceiling(i / 50.0 * 50));
-		string progressUndone = new string(_loadingIndicatorEmpty, progressWidth - progressCompleted.Length);
+		int progressTotalWidth = Console.BufferWidth - (progressStart.Length + progressEnd.Length);
+		string progressCompleted = new string(_loadingIndicator, (int)Math.Ceiling(percentage / 100.0 * progressTotalWidth));
+		string progressUndone = new string(_loadingIndicatorEmpty, progressTotalWidth - progressCompleted.Length);
 
 		Console.Write(progressStart);
 		Console.ForegroundColor = ConsoleColor.Green;
