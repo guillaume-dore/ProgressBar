@@ -1,21 +1,26 @@
 ﻿namespace ProgressBar;
 
-public class ProgressBar : IDisposable
+public class ProgressBar : IDisposable, IProgress<float>
 {
-	private string _text = "Progress";
+	private readonly string _text = "Progress";
 
-	private char _loadingIndicator = '█';
+	private readonly char _loadingIndicator = '█';
 
-	private char _loadingIndicatorEmpty = '░';
+	private readonly char _loadingIndicatorEmpty = '░';
 
 	private string? _optionalText;
 
-	private bool _visible = false;
+	private bool _isStarted;
 
 	public ProgressBar(bool start = true)
 	{
-		Console.CursorVisible = !start;
-		this._visible = start;
+		if (Console.IsOutputRedirected)
+			this._isStarted = false;
+		else
+		{
+			this._isStarted = start;
+			Console.CursorVisible = !_isStarted;
+		}
 	}
 
 	public ProgressBar(string text, bool start = true) : this(start)
@@ -30,57 +35,59 @@ public class ProgressBar : IDisposable
 
 	public void Dispose()
 	{
+		this.Unrender();
 		Console.CursorVisible = true;
-		Console.SetCursorPosition(0, Console.BufferHeight - 1);
-		Console.Write(new string(' ', Console.BufferWidth));
-		Console.SetCursorPosition(0, Console.BufferHeight - 1);
 		GC.SuppressFinalize(this);
 	}
 
 	public void Start()
 	{
-		Console.CursorVisible = false;
-		this._visible = true;
-		int valueTop = Console.GetCursorPosition().Top;
-		if (valueTop == Console.BufferHeight - 1)
-		{
-			Console.SetCursorPosition(0, Console.BufferHeight - 1);
-			Render(10, "starting...");
-		}
-	}
+		if (this._isStarted || Console.IsOutputRedirected)
+			return;
 
+		this._isStarted = true;
+		Console.CursorVisible = false;
+		this.Render(10, _optionalText);
+	}
 
 	public void Stop()
 	{
-		this._visible = false;
-		Console.SetCursorPosition(0, Console.BufferHeight - 1);
-		Console.Write(new string(' ', Console.BufferWidth));
-		Console.SetCursorPosition(0, Console.BufferHeight - 1);
+		if (!this._isStarted)
+			return;
+
+		this._isStarted = false;
+		this.Unrender();
 		Console.CursorVisible = true;
 	}
 
 	public void WriteLine(string? value)
 	{
-		if (value == null)
-			return;
-
-		int valueTop = Console.GetCursorPosition().Top;
-		if (valueTop == Console.BufferHeight - 1 && this._visible)
+		int cursorTop = Console.GetCursorPosition().Top;
+		if (cursorTop == Console.BufferHeight - 1 && this._isStarted)
 		{
 			Console.SetCursorPosition(0, Console.BufferHeight - 1);
 			Console.Write(Environment.NewLine);
-			var cursorPosition = Console.GetCursorPosition();
-			Console.SetCursorPosition(0, valueTop - 1);
-			Console.Write(value.PadRight(Console.BufferWidth));
+			Console.SetCursorPosition(0, cursorTop - 1);
+			Console.Write(value?.PadRight(Console.BufferWidth));
 			Console.SetCursorPosition(0, Console.BufferHeight - 1);
 		}
 		else
 			Console.WriteLine(value);
 	}
 
+	public void Report(float value)
+	{
+
+	}
+
+	public void Report(float value, string updatedText)
+	{
+
+	}
+
 	public void Render(int i, string? optionalText = null)
 	{
-		if (!this._visible)
+		if (!this._isStarted)
 			return;
 
 		_optionalText = optionalText;
@@ -88,6 +95,15 @@ public class ProgressBar : IDisposable
 		Console.SetCursorPosition(0, Console.BufferHeight - 1);
 		DrawProgressBar(i);
 		Console.SetCursorPosition(0, topPosition);
+	}
+
+	private void Unrender()
+	{
+		(int left, int top) = Console.GetCursorPosition();
+
+		Console.SetCursorPosition(0, Console.BufferHeight - 1);
+		Console.Write(new string(' ', Console.BufferWidth));
+		Console.SetCursorPosition(left, top);
 	}
 
 	public void DrawProgressBar(int i)
