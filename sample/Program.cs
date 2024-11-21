@@ -4,70 +4,95 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-		using (var progressBar = new ProgressBar(false))
+		DefaultLayout();
+		UnixLayout();
+		SetProgressWithPercentage();
+		AdditionalText();
+		PauseAndRestartProgressBar();
+		WithConsoleOutputText();
+	}
+
+	static void DefaultLayout()
+	{
+		using var progressBar = new ProgressBar();
+		for (int i = 0; i < 100; i++)
 		{
-			for (int i = 0; i < 100; i++)
-			{
-				if (i == 35)
-				{
-					progressBar.Start();
-				}
-				if (i == 51)
-					progressBar.Stop();
-
-				if (i == 68)
-					progressBar.Start();
-
-				progressBar.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
-				progressBar.Render(i, $"step {i} of 100");
-				Thread.Sleep(200);
-			}
+			progressBar.AddSteps(1);
+			Thread.Sleep(100);
 		}
+	}
 
+	static void UnixLayout()
+	{
+		using var progressBar = new ProgressBar(Layout.Unix);
+		for (int i = 0; i < 100; i++)
+		{
+			progressBar.AddSteps(1);
+			Thread.Sleep(100);
+		}
+	}
 
-		Console.WriteLine("test");
-		Console.WriteLine("test");
-		Console.WriteLine("test");
-		Console.WriteLine("test");
-		Console.WriteLine("test");
+	static void SetProgressWithPercentage()
+	{
+		using var progressBar = new ProgressBar();
+		for (int i = 0; i < 100; i++)
+		{
+			var percentProgress = (i / 100.0) * 100;
+			if (i % 2 == 0)
+				progressBar.Percentage = percentProgress;
+			else
+				progressBar.Report(percentProgress);
+			Thread.Sleep(100);
+		}
+	}
 
-		//Console.CursorVisible = false;
-		//string loading = "#..........";
-		//var loadIndicator = '\\';
-		//var cts = new CancellationTokenSource();
-		//Task.Run(() =>
-		//{
-		//	//for (int i = 0; i < 100; i++)
-		//	//{
-		//	//	var height = Console.WindowHeight;
-		//	//	Console.WriteLine($"Task running line {i + 1} in execution...");
-		//	//}
-		//	int cpt = 0;
-		//	while (true)
-		//	{
-		//		if (cpt > 0)
-		//		{
-		//			Console.SetCursorPosition(0, Console.WindowHeight - 1);
-		//			Console.Write(new string(' ', Console.BufferWidth));
-		//			Console.SetCursorPosition(0, Console.WindowHeight - 1);
-		//		}
-		//		else
-		//			Console.SetCursorPosition(0, Console.WindowHeight - 1);
+	static void AdditionalText()
+	{
+		using var progressBar = new ProgressBar();
+		for (int i = 0; i < 100; i++)
+		{
+			var percentProgress = (i / 100.0) * 100;
+			if (i % 2 == 0)
+				progressBar.Report(percentProgress, $"step {i} of 100");
+			else
+				progressBar.AddSteps(1, $"step {i} of 100");
+			Thread.Sleep(100);
+		}
+	}
 
-		//		Console.Write($"Task running line {cpt + 1} in execution...");
-		//		Console.SetCursorPosition(0, Console.CursorTop);
-		//		Console.Write($"[{loading}] {loadIndicator} {cpt * 10}%");
+	static void PauseAndRestartProgressBar()
+	{
+		using var progressBar = new ProgressBar();
+		for (int i = 0; i < 100; i++)
+		{
+			if (i == 20)
+			{
+				progressBar.Start();
+			}
+			if (i == 51)
+				progressBar.Stop();
 
+			if (i == 68)
+				progressBar.Start();
 
-		//		if (cpt == loading.ToCharArray().Length - 1)
-		//			return;
-		//		cpt++;
-		//		loadIndicator = loadIndicator == '\\' ? '/' : '\\';
-		//		var charArray = loading.ToCharArray();
-		//		charArray[cpt] = '#';
-		//		loading = new string(charArray);
-		//		Thread.Sleep(1000);
-		//	}
-		//}, cts.Token).Wait();
+			var percentProgress = (i / 100.0) * 100;
+			if (i % 2 == 0)
+				progressBar.Percentage = percentProgress;
+			else
+				progressBar.Report(percentProgress);
+			Thread.Sleep(100);
+		}
+	}
+
+	static void WithConsoleOutputText()
+	{
+		using var progressBar = new ProgressBar();
+		for (int i = 0; i < 100; i++)
+		{
+			var percentProgress = (i / 100.0) * 100;
+			progressBar.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
+			progressBar.Report(percentProgress, $"step {i} of 100");
+			Thread.Sleep(100);
+		}
 	}
 }
