@@ -1,6 +1,9 @@
 ﻿namespace ProgressBar;
 
-public class ProgressBar : IDisposable, IProgress<float>
+/// <summary>
+/// Provide an object to manage drawing and manipulating a console progress bar.
+/// </summary>
+public class ProgressBar : IDisposable, IProgress<double>
 {
 	private readonly string _text = "Progress";
 
@@ -10,14 +13,23 @@ public class ProgressBar : IDisposable, IProgress<float>
 
 	private string? _optionalText;
 
-	private bool _isStarted;
+	private readonly int _maxSteps = 100;
 
 	private int _steps = 0;
 
-	private int _maxSteps = 100;
+	private bool _isStarted = true;
 
-	public ProgressBar(bool start = true)
+	/// <summary>
+	/// Initializes a new instance of <see cref="ProgressBar"/> class.<br/>
+	/// If <see cref="Console.IsOutputRedirected"/> is <c>True</c>, the progress bar will not be rendered.
+	/// </summary>
+	/// <param name="maxStep">Maximum step number allowed.</param>
+	/// <param name="message">Message to display to the left part of the console progress bar.</param>
+	/// <param name="start"><c>True</c> to start showing immediatly the progress, otherwise <c>False</c></param>
+	public ProgressBar(int maxStep = 100, string message = "Progress", bool start = true)
 	{
+		this._maxSteps = maxStep;
+		this._text = message;
 		if (Console.IsOutputRedirected)
 			this._isStarted = false;
 		else
@@ -27,16 +39,9 @@ public class ProgressBar : IDisposable, IProgress<float>
 		}
 	}
 
-	public ProgressBar(string text, bool start = true) : this(start)
-	{
-		_text = text;
-	}
-
-	public ProgressBar(string text, string optionalText, bool start = true) : this(text, start)
-	{
-		_optionalText = optionalText;
-	}
-
+	/// <summary>
+	/// Progress percentage to display.
+	/// </summary>
 	public double Percentage
 	{
 		get => (100.0 / this._maxSteps) * this._steps;
@@ -49,13 +54,27 @@ public class ProgressBar : IDisposable, IProgress<float>
 		}
 	}
 
-	public void Dispose()
+	/// <inheritdoc/>
+	public void Report(double value)
 	{
-		this.Unrender();
-		Console.CursorVisible = true;
-		GC.SuppressFinalize(this);
+		if (value < 0 || value > 100)
+			return;
+		this.Percentage = value;
 	}
 
+	/// <inheritdoc cref="Report(double)"/>
+	/// <param name="updatedText">Dynamic information text to update.</param>
+	public void Report(double value, string updatedText)
+	{
+		if (value < 0 || value > 100)
+			return;
+		this._optionalText = updatedText;
+		this.Report(value);
+	}
+
+	/// <summary>
+	/// Start rendering the progress bar to the console output.
+	/// </summary>
 	public void Start()
 	{
 		if (this._isStarted || Console.IsOutputRedirected)
@@ -66,6 +85,9 @@ public class ProgressBar : IDisposable, IProgress<float>
 		this.Render();
 	}
 
+	/// <summary>
+	/// Stop rendering the progress bar to the console output.
+	/// </summary>
 	public void Stop()
 	{
 		if (!this._isStarted)
@@ -76,6 +98,19 @@ public class ProgressBar : IDisposable, IProgress<float>
 		Console.CursorVisible = true;
 	}
 
+	/// <inheritdoc/>
+	public void Dispose()
+	{
+		this.Unrender();
+		Console.CursorVisible = true;
+		GC.SuppressFinalize(this);
+	}
+
+	/// <summary>
+	/// Writes the specified string value, followed by the current line terminator,
+	/// to the standard output stream.<br/> Then redraw the progress bar to the console output.
+	/// </summary>
+	/// <param name="value">The value to write.</param>
 	public void WriteLine(string? value)
 	{
 		int cursorTop = Console.CursorTop;
@@ -92,16 +127,9 @@ public class ProgressBar : IDisposable, IProgress<float>
 		Render();
 	}
 
-	public void Report(float value)
-	{
-
-	}
-
-	public void Report(float value, string updatedText)
-	{
-
-	}
-
+	/// <summary>
+	/// Render the progress bar to the console output.
+	/// </summary>
 	private void Render()
 	{
 		if (!this._isStarted)
@@ -113,6 +141,9 @@ public class ProgressBar : IDisposable, IProgress<float>
 		Console.SetCursorPosition(left, top);
 	}
 
+	/// <summary>
+	/// Clear the progress bar from the console output.
+	/// </summary>
 	private void Unrender()
 	{
 		(int left, int top) = Console.GetCursorPosition();
@@ -121,6 +152,9 @@ public class ProgressBar : IDisposable, IProgress<float>
 		Console.SetCursorPosition(left, top);
 	}
 
+	/// <summary>
+	/// Draw the progress bar updated to the console output.
+	/// </summary>
 	private void DrawProgressBar()
 	{
 		string progressStart = _text + $": [{this.Percentage:00}%] ";
