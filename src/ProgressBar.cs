@@ -63,6 +63,7 @@ public class ProgressBar : IDisposable, IProgress<double>
 	}
 
 	/// <inheritdoc cref="Report(double)"/>
+	/// <param name="value"><inheritdoc cref="Report(double)" path="=/param[@name='value']"/></param>
 	/// <param name="updatedText">Dynamic information text to update.</param>
 	public void Report(double value, string updatedText)
 	{
@@ -70,6 +71,24 @@ public class ProgressBar : IDisposable, IProgress<double>
 			return;
 		this._optionalText = updatedText;
 		this.Report(value);
+	}
+
+	/// <summary>
+	/// Add steps to the progress bar.
+	/// </summary>
+	/// <param name="steps">Number to steps to add.</param>
+	/// <param name="updatedText">Optional text displayed to change.</param>
+	public void AddSteps(int steps, string? updatedText = null)
+	{
+		int totalSteps = this._steps + steps;
+		if (totalSteps < 0 || totalSteps > this._maxSteps)
+			return;
+
+		if (updatedText != null)
+			this._optionalText = updatedText;
+
+		this._steps = totalSteps;
+		this.Render();
 	}
 
 	/// <summary>
