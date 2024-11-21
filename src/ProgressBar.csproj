@@ -16,6 +16,7 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageId>CLI.$(AssemblyName)</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
