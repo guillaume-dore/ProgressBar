@@ -5,13 +5,7 @@
 /// </summary>
 public class ProgressBar : IDisposable, IProgress<double>
 {
-	private readonly string _text = "Progress";
-
-	private readonly char _loadingIndicator = '█';
-
-	private readonly char _loadingIndicatorEmpty = '░';
-
-	private string? _optionalText;
+	private readonly Layout _layout = Layout.Default;
 
 	private readonly int _maxSteps = 100;
 
@@ -24,12 +18,10 @@ public class ProgressBar : IDisposable, IProgress<double>
 	/// If <see cref="Console.IsOutputRedirected"/> is <c>True</c>, the progress bar will not be rendered.
 	/// </summary>
 	/// <param name="maxStep">Maximum step number allowed.</param>
-	/// <param name="message">Message to display to the left part of the console progress bar.</param>
 	/// <param name="start"><c>True</c> to start showing immediatly the progress, otherwise <c>False</c></param>
-	public ProgressBar(int maxStep = 100, string message = "Progress", bool start = true)
+	public ProgressBar(int maxStep = 100, bool start = true)
 	{
 		this._maxSteps = maxStep;
-		this._text = message;
 		if (Console.IsOutputRedirected)
 			this._isStarted = false;
 		else
@@ -37,6 +29,18 @@ public class ProgressBar : IDisposable, IProgress<double>
 			this._isStarted = start;
 			Console.CursorVisible = !_isStarted;
 		}
+	}
+
+	/// <summary>
+	/// Initializes a new instance of <see cref="ProgressBar"/> class.<br/>
+	/// If <see cref="Console.IsOutputRedirected"/> is <c>True</c>, the progress bar will not be rendered.
+	/// </summary>
+	/// <param name="layout">Progress bar style.</param>
+	/// <param name="maxStep">Maximum step number allowed.</param>
+	/// <param name="start"><c>True</c> to start showing immediatly the progress, otherwise <c>False</c></param>
+	public ProgressBar(Layout layout, int maxStep = 100, bool start = true) : this(maxStep, start)
+	{
+		this._layout = layout;
 	}
 
 	/// <summary>
@@ -69,7 +73,7 @@ public class ProgressBar : IDisposable, IProgress<double>
 	{
 		if (value < 0 || value > 100)
 			return;
-		this._optionalText = updatedText;
+		this._layout.AdditionalText = updatedText;
 		this.Report(value);
 	}
 
@@ -85,7 +89,7 @@ public class ProgressBar : IDisposable, IProgress<double>
 			return;
 
 		if (updatedText != null)
-			this._optionalText = updatedText;
+			this._layout.AdditionalText = updatedText;
 
 		this._steps = totalSteps;
 		this.Render();
@@ -176,16 +180,16 @@ public class ProgressBar : IDisposable, IProgress<double>
 	/// </summary>
 	private void DrawProgressBar()
 	{
-		string progressStart = _text + $": [{this.Percentage:00}%] ";
-		string progressEnd = " " + _optionalText;
+		string progressStart = this._layout.Text + $": [{this.Percentage:00}%] ";
+		string progressEnd = " " + this._layout.AdditionalText;
 		int progressTotalWidth = Console.BufferWidth - (progressStart.Length + progressEnd.Length);
-		string progressCompleted = new string(_loadingIndicator, (int)Math.Ceiling(this.Percentage / 100.0 * progressTotalWidth));
-		string progressUndone = new string(_loadingIndicatorEmpty, progressTotalWidth - progressCompleted.Length);
+		string progressCompleted = new string(this._layout.ProgressIndicator.Value, (int)Math.Ceiling(this.Percentage / 100.0 * progressTotalWidth));
+		string progressUndone = new string(this._layout.PendingIndicator.Value, progressTotalWidth - progressCompleted.Length);
 
 		Console.Write(progressStart);
-		Console.ForegroundColor = ConsoleColor.Green;
+		Console.ForegroundColor = this._layout.ProgressIndicator.ForegroundColor;
 		Console.Write(progressCompleted);
-		Console.ForegroundColor = ConsoleColor.DarkGreen;
+		Console.ForegroundColor = this._layout.PendingIndicator.ForegroundColor;
 		Console.Write(progressUndone);
 		Console.ResetColor();
 		Console.Write(progressEnd);
