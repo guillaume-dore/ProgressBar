@@ -12,6 +12,10 @@ public class ProgressBar : IDisposable, IProgress<float>
 
 	private bool _isStarted;
 
+	private int _steps = 0;
+
+	private int _maxSteps = 100;
+
 	public ProgressBar(bool start = true)
 	{
 		if (Console.IsOutputRedirected)
@@ -33,6 +37,18 @@ public class ProgressBar : IDisposable, IProgress<float>
 		_optionalText = optionalText;
 	}
 
+	public double Percentage
+	{
+		get => (100.0 / this._maxSteps) * this._steps;
+		set
+		{
+			if (value < 0 || value > 100)
+				return;
+			this._steps = (int)Math.Ceiling(value / 100.0 * this._maxSteps);
+			this.Render();
+		}
+	}
+
 	public void Dispose()
 	{
 		this.Unrender();
@@ -47,7 +63,7 @@ public class ProgressBar : IDisposable, IProgress<float>
 
 		this._isStarted = true;
 		Console.CursorVisible = false;
-		this.Render(10, _optionalText);
+		this.Render();
 	}
 
 	public void Stop()
@@ -73,6 +89,7 @@ public class ProgressBar : IDisposable, IProgress<float>
 		}
 		else
 			Console.WriteLine(value);
+		Render();
 	}
 
 	public void Report(float value)
@@ -85,16 +102,15 @@ public class ProgressBar : IDisposable, IProgress<float>
 
 	}
 
-	public void Render(int i, string? optionalText = null)
+	private void Render()
 	{
 		if (!this._isStarted)
 			return;
 
-		_optionalText = optionalText;
-		int cursorTop = Console.CursorTop;
+		(int left, int top) = Console.GetCursorPosition();
 		Console.SetCursorPosition(0, Console.BufferHeight - 1);
-		DrawProgressBar(i);
-		Console.SetCursorPosition(0, cursorTop);
+		DrawProgressBar();
+		Console.SetCursorPosition(left, top);
 	}
 
 	private void Unrender()
@@ -105,13 +121,12 @@ public class ProgressBar : IDisposable, IProgress<float>
 		Console.SetCursorPosition(left, top);
 	}
 
-	public void DrawProgressBar(int i)
+	private void DrawProgressBar()
 	{
-		var percentage = (int)Math.Ceiling(i / 50.0 * 50);
-		string progressStart = _text + $": [{percentage:00}%] ";
+		string progressStart = _text + $": [{this.Percentage:00}%] ";
 		string progressEnd = " " + _optionalText;
 		int progressTotalWidth = Console.BufferWidth - (progressStart.Length + progressEnd.Length);
-		string progressCompleted = new string(_loadingIndicator, (int)Math.Ceiling(percentage / 100.0 * progressTotalWidth));
+		string progressCompleted = new string(_loadingIndicator, (int)Math.Ceiling(this.Percentage / 100.0 * progressTotalWidth));
 		string progressUndone = new string(_loadingIndicatorEmpty, progressTotalWidth - progressCompleted.Length);
 
 		Console.Write(progressStart);
