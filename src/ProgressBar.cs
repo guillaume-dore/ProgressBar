@@ -181,13 +181,51 @@ public class ProgressBar : IDisposable, IProgress<double>
 	/// </summary>
 	private void DrawProgressBar()
 	{
+		string? text = this._layout.Text.Value;
+		string? additionalText = this._layout.AdditionalText.Value;
 		string percentage;
 		if (this._layout.Bar.BracketOptions.HasValue && this._layout.Bar.BracketOptions.Value.HasFlag(BracketLayout.Percentage))
 			percentage = $"[{this.Percentage:00}%]";
 		else
 			percentage = $"{this.Percentage:00}%";
 
-		int availableBarWidth = Console.BufferWidth - (this._layout.GetTextualLengthWithSpacing() + percentage.Length);
+		int totalTextualLenght = this._layout.GetTextualLengthWithSpacing() + percentage.Length;
+		int availableWidth = Console.BufferWidth - totalTextualLenght;
+
+		if (availableWidth < BarLayout.MinimumSize)
+		{
+			string ellipsis = "...";
+			int charToRemove = BarLayout.MinimumSize - availableWidth + ellipsis.Length;
+			if (additionalText != null)
+			{
+				if (additionalText.Length > charToRemove)
+				{
+					additionalText = additionalText.Remove(additionalText.Length - charToRemove) + ellipsis;
+					charToRemove = 0;
+				}
+				else
+				{
+					charToRemove -= additionalText.Length;
+					additionalText = null;
+				}
+			}
+
+			if (text != null && charToRemove > 0)
+			{
+				if (text.Length > charToRemove)
+				{
+					text = text.Remove(text.Length - charToRemove) + ellipsis;
+					charToRemove = 0;
+				}
+				else
+				{
+					charToRemove -= text.Length;
+					text = null;
+				}
+			}
+		}
+
+		int availableBarWidth = Math.Max(availableWidth, BarLayout.MinimumSize);
 		string progress = new string(this._layout.Bar.ProgressIndicator.Value, (int)Math.Floor(this.Percentage / 100.0 * availableBarWidth));
 		string pending = new string(this._layout.Bar.PendingIndicator.Value, availableBarWidth - progress.Length);
 
@@ -207,16 +245,16 @@ public class ProgressBar : IDisposable, IProgress<double>
 				if (this._layout.Bar.Direction == BarDirection.Reverse)
 					Console.Write(percentage.PadLeft(percentage.Length + 1, ' '));
 
-				if (this._layout.Text.Value != null)
-					DrawSection(this._layout.Text.Value.PadLeft(this._layout.Text.Value.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
-				if (this._layout.AdditionalText.Value != null)
-					DrawSection(this._layout.AdditionalText.Value.PadLeft(this._layout.AdditionalText.Value.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
+				if (text != null)
+					DrawSection(text.PadLeft(text.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
+				if (additionalText != null)
+					DrawSection(additionalText.PadLeft(additionalText.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
 				break;
 			case LayoutPosition.Right:
-				if (this._layout.Text.Value != null)
-					DrawSection(this._layout.Text.Value.PadRight(this._layout.Text.Value.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
-				if (this._layout.AdditionalText.Value != null)
-					DrawSection(this._layout.AdditionalText.Value.PadRight(this._layout.AdditionalText.Value.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
+				if (text != null)
+					DrawSection(text.PadRight(text.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
+				if (additionalText != null)
+					DrawSection(additionalText.PadRight(additionalText.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
 
 				if (this._layout.Bar.Direction == BarDirection.Forward)
 					Console.Write(percentage.PadRight(percentage.Length + 1, ' '));
@@ -230,8 +268,8 @@ public class ProgressBar : IDisposable, IProgress<double>
 					Console.Write(percentage.PadLeft(percentage.Length + 1, ' '));
 				break;
 			case LayoutPosition.Center:
-				if (this._layout.Text.Value != null)
-					DrawSection(this._layout.Text.Value.PadRight(this._layout.Text.Value.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
+				if (text != null)
+					DrawSection(text.PadRight(text.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
 
 				if (this._layout.Bar.Direction == BarDirection.Forward)
 					Console.Write(percentage.PadRight(percentage.Length + 1, ' '));
@@ -244,8 +282,8 @@ public class ProgressBar : IDisposable, IProgress<double>
 				if (this._layout.Bar.Direction == BarDirection.Reverse)
 					Console.Write(percentage.PadLeft(percentage.Length + 1, ' '));
 
-				if (this._layout.AdditionalText.Value != null)
-					DrawSection(this._layout.AdditionalText.Value.PadLeft(this._layout.AdditionalText.Value.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
+				if (additionalText != null)
+					DrawSection(additionalText.PadLeft(additionalText.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
 				break;
 		}
 	}

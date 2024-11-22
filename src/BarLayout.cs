@@ -9,6 +9,11 @@
 public class BarLayout(Element<char> progressIndicator, Element<char> pendingIndicator)
 {
 	/// <summary>
+	/// Minimum authorized size of bar length.
+	/// </summary>
+	public const int MinimumSize = 20;
+
+	/// <summary>
 	/// FullFilled indicator <see cref="Element{Char}"/>.<br/>
 	/// Define the completed style of the progress.
 	/// </summary>
