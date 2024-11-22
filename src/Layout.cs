@@ -6,73 +6,64 @@
 public class Layout
 {
 	/// <summary>
+	/// Initializes a new instance of <see cref="Layout"/> class.
+	/// </summary>
+	/// <param name="layout">Layout of the bar component to define.</param>
+	public Layout(BarLayout layout)
+	{
+		ArgumentNullException.ThrowIfNull(layout, nameof(layout));
+		this.Bar = layout;
+	}
+
+	/// <summary>
+	/// Initializes a new instance of <see cref="Layout"/> class.<br/>
+	/// </summary>
+	/// <param name="layout">Layout of the bar component to define.</param>
+	/// <param name="text">Principal text.</param>
+	/// <param name="additionalText">Optional additional text.</param>
+	public Layout(BarLayout layout, Element<string> text, Element<string>? additionalText = null) : this(layout)
+	{
+		ArgumentNullException.ThrowIfNull(text, nameof(text));
+		this.Text = text;
+		this.AdditionalText = additionalText;
+	}
+
+	/// <summary>
+	/// Layout of the bar component.
+	/// </summary>
+	public BarLayout Bar { get; init; }
+
+	/// <summary>
 	/// Principal text to display.
 	/// </summary>
-	public string Text { get; set; }
+	public Element<string>? Text { get; set; } = null;
 
 	/// <summary>
 	/// Additional dynamic text to display.
 	/// </summary>
-	public string? AdditionalText { get; set; }
-
-	/// <summary>
-	/// FullFilled indicator <see cref="Element"/>.<br/>
-	/// Define the completed style of the progress.
-	/// </summary>
-	public Element ProgressIndicator { get; set; }
-
-	/// <summary>
-	/// Remaining indicator <see cref="Element"/>.<br/>
-	/// Define the remaining style of the progress.
-	/// </summary>
-	public Element PendingIndicator { get; set; }
-
-	/// <summary>
-	/// Initializes a new instance of <see cref="Layout"/> class.
-	/// </summary>
-	/// <param name="progressIndicator"><see cref="Element"/> indicator of completed part of the progress bar.</param>
-	/// <param name="pendingIndicator"><see cref="Element"/> indicator of remaining part of the progress bar.</param>
-	/// <param name="text">Principal text.</param>
-	/// <param name="additionalText">Additional text.</param>
-	public Layout(Element progressIndicator, Element pendingIndicator, string text, string? additionalText = null)
-	{
-		this.Text = text;
-		this.ProgressIndicator = progressIndicator;
-		this.PendingIndicator = pendingIndicator;
-		this.AdditionalText = additionalText;
-	}
+	public Element<string>? AdditionalText { get; set; } = null;
 
 	/// <summary>
 	/// Default style <see cref="Layout"/>.
 	/// </summary>
 	public static Layout Default => new(
-		new Element { ForegroundColor = ConsoleColor.Green, Value = '█' },
-		new Element { ForegroundColor = ConsoleColor.DarkGreen, Value = '░' },
-		"Progress"
+		new BarLayout(
+			new Element<char>('█') { ForegroundColor = ConsoleColor.Green },
+			new Element<char>('░') { ForegroundColor = ConsoleColor.DarkGreen }
+		)
+		{ Direction = BarDirection.Reverse },
+		new Element<string>("Progress")
 	);
 
 	/// <summary>
 	/// Unix style <see cref="Layout"/>.
 	/// </summary>
 	public static Layout Unix => new(
-		new Element { ForegroundColor = ConsoleColor.Green, Value = '#' },
-		new Element { ForegroundColor = ConsoleColor.DarkGreen, Value = '.' },
-		"Progress"
+		new BarLayout(
+			new Element<char>('#') { ForegroundColor = ConsoleColor.Green },
+			new Element<char>('.') { ForegroundColor = ConsoleColor.DarkGreen }
+		)
+		{ BracketOptions = BracketLayout.Percentage | BracketLayout.Bar },
+		new Element<string>("Progress")
 	);
-}
-
-/// <summary>
-/// Define a console element with color.
-/// </summary>
-public class Element
-{
-	/// <summary>
-	/// Text color of the element.
-	/// </summary>
-	public ConsoleColor ForegroundColor { get; set; }
-
-	/// <summary>
-	/// Element character.
-	/// </summary>
-	public char Value { get; set; }
 }
