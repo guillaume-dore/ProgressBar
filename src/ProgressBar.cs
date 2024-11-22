@@ -73,7 +73,7 @@ public class ProgressBar : IDisposable, IProgress<double>
 	{
 		if (value < 0 || value > 100)
 			return;
-		this._layout.AdditionalText = updatedText;
+		this._layout.AdditionalText.Value = updatedText;
 		this.Report(value);
 	}
 
@@ -89,7 +89,7 @@ public class ProgressBar : IDisposable, IProgress<double>
 			return;
 
 		if (updatedText != null)
-			this._layout.AdditionalText = updatedText;
+			this._layout.AdditionalText.Value = updatedText;
 
 		this._steps = totalSteps;
 		this.Render();
@@ -181,18 +181,83 @@ public class ProgressBar : IDisposable, IProgress<double>
 	/// </summary>
 	private void DrawProgressBar()
 	{
-		string progressStart = this._layout.Text + $": [{this.Percentage:00}%] ";
-		string progressEnd = " " + this._layout.AdditionalText;
-		int progressTotalWidth = Console.BufferWidth - (progressStart.Length + progressEnd.Length);
-		string progressCompleted = new string(this._layout.ProgressIndicator.Value, (int)Math.Ceiling(this.Percentage / 100.0 * progressTotalWidth));
-		string progressUndone = new string(this._layout.PendingIndicator.Value, progressTotalWidth - progressCompleted.Length);
+		string percentage;
+		if (this._layout.Bar.BracketOptions.HasValue && this._layout.Bar.BracketOptions.Value.HasFlag(BracketLayout.Percentage))
+			percentage = $"[{this.Percentage:00}%]";
+		else
+			percentage = $"{this.Percentage:00}%";
 
-		Console.Write(progressStart);
-		Console.ForegroundColor = this._layout.ProgressIndicator.ForegroundColor;
-		Console.Write(progressCompleted);
-		Console.ForegroundColor = this._layout.PendingIndicator.ForegroundColor;
-		Console.Write(progressUndone);
+		int availableBarWidth = Console.BufferWidth - (this._layout.GetTextualLengthWithSpacing() + percentage.Length);
+		string progress = new string(this._layout.Bar.ProgressIndicator.Value, (int)Math.Floor(this.Percentage / 100.0 * availableBarWidth));
+		string pending = new string(this._layout.Bar.PendingIndicator.Value, availableBarWidth - progress.Length);
+
+
+		bool hasBarBrackets = this._layout.Bar.BracketOptions.HasValue && this._layout.Bar.BracketOptions.Value.HasFlag(BracketLayout.Bar);
+		switch (this._layout.Bar.Position)
+		{
+			case LayoutPosition.Left:
+				if (this._layout.Bar.Direction == BarDirection.Forward)
+					Console.Write(percentage.PadRight(percentage.Length + 1, ' '));
+				if (hasBarBrackets)
+					Console.Write("[");
+				DrawSection(progress, this._layout.Bar.ProgressIndicator.ForegroundColor, this._layout.Bar.ProgressIndicator.BackgroundColor);
+				DrawSection(pending, this._layout.Bar.PendingIndicator.ForegroundColor, this._layout.Bar.PendingIndicator.BackgroundColor);
+				if (hasBarBrackets)
+					Console.Write("]");
+				if (this._layout.Bar.Direction == BarDirection.Reverse)
+					Console.Write(percentage.PadLeft(percentage.Length + 1, ' '));
+
+				if (this._layout.Text.Value != null)
+					DrawSection(this._layout.Text.Value.PadLeft(this._layout.Text.Value.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
+				if (this._layout.AdditionalText.Value != null)
+					DrawSection(this._layout.AdditionalText.Value.PadLeft(this._layout.AdditionalText.Value.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
+				break;
+			case LayoutPosition.Right:
+				if (this._layout.Text.Value != null)
+					DrawSection(this._layout.Text.Value.PadRight(this._layout.Text.Value.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
+				if (this._layout.AdditionalText.Value != null)
+					DrawSection(this._layout.AdditionalText.Value.PadRight(this._layout.AdditionalText.Value.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
+
+				if (this._layout.Bar.Direction == BarDirection.Forward)
+					Console.Write(percentage.PadRight(percentage.Length + 1, ' '));
+				if (hasBarBrackets)
+					Console.Write("[");
+				DrawSection(progress, this._layout.Bar.ProgressIndicator.ForegroundColor, this._layout.Bar.ProgressIndicator.BackgroundColor);
+				DrawSection(pending, this._layout.Bar.PendingIndicator.ForegroundColor, this._layout.Bar.PendingIndicator.BackgroundColor);
+				if (hasBarBrackets)
+					Console.Write("]");
+				if (this._layout.Bar.Direction == BarDirection.Reverse)
+					Console.Write(percentage.PadLeft(percentage.Length + 1, ' '));
+				break;
+			case LayoutPosition.Center:
+				if (this._layout.Text.Value != null)
+					DrawSection(this._layout.Text.Value.PadRight(this._layout.Text.Value.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
+
+				if (this._layout.Bar.Direction == BarDirection.Forward)
+					Console.Write(percentage.PadRight(percentage.Length + 1, ' '));
+				if (hasBarBrackets)
+					Console.Write("[");
+				DrawSection(progress, this._layout.Bar.ProgressIndicator.ForegroundColor, this._layout.Bar.ProgressIndicator.BackgroundColor);
+				DrawSection(pending, this._layout.Bar.PendingIndicator.ForegroundColor, this._layout.Bar.PendingIndicator.BackgroundColor);
+				if (hasBarBrackets)
+					Console.Write("]");
+				if (this._layout.Bar.Direction == BarDirection.Reverse)
+					Console.Write(percentage.PadLeft(percentage.Length + 1, ' '));
+
+				if (this._layout.AdditionalText.Value != null)
+					DrawSection(this._layout.AdditionalText.Value.PadLeft(this._layout.AdditionalText.Value.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
+				break;
+		}
+	}
+
+	private void DrawSection(string text, ConsoleColor? foregroundColor = null, ConsoleColor? backgroundColor = null)
+	{
+		if (foregroundColor.HasValue)
+			Console.ForegroundColor = foregroundColor.Value;
+		if (backgroundColor.HasValue)
+			Console.BackgroundColor = backgroundColor.Value;
+
+		Console.Write(text);
 		Console.ResetColor();
-		Console.Write(progressEnd);
 	}
 }

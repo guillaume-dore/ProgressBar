@@ -25,23 +25,42 @@ public class Layout
 	{
 		ArgumentNullException.ThrowIfNull(text, nameof(text));
 		this.Text = text;
-		this.AdditionalText = additionalText;
+
+		if (additionalText != null)
+			this.AdditionalText = additionalText;
 	}
 
 	/// <summary>
 	/// Layout of the bar component.
 	/// </summary>
-	public BarLayout Bar { get; init; }
+	public BarLayout Bar { get; }
 
 	/// <summary>
 	/// Principal text to display.
 	/// </summary>
-	public Element<string>? Text { get; set; } = null;
+	public Element<string> Text { get; set; } = new Element<string>();
 
 	/// <summary>
-	/// Additional dynamic text to display.
+	/// Additional text to display.
 	/// </summary>
-	public Element<string>? AdditionalText { get; set; } = null;
+	public Element<string> AdditionalText { get; set; } = new Element<string>();
+
+	/// <summary>
+	/// Get total length of the textual representation of the layout.
+	/// </summary>
+	/// <returns>Return total length as <see cref="int"/>.</returns>
+	public int GetTextualLengthWithSpacing()
+	{
+		// Include minimum spacing, further add one more space per text set.
+		int textLength = 1;
+		if (!string.IsNullOrEmpty(this.Text.Value))
+			textLength += this.Text.Value.Length + 1;
+		if (!string.IsNullOrEmpty(this.AdditionalText.Value))
+			textLength += this.AdditionalText.Value.Length + 1;
+		if (this.Bar.BracketOptions.HasValue && this.Bar.BracketOptions.Value.HasFlag(BracketLayout.Bar))
+			textLength += 2;
+		return textLength;
+	}
 
 	/// <summary>
 	/// Default style <see cref="Layout"/>.
@@ -52,7 +71,7 @@ public class Layout
 			new Element<char>('░') { ForegroundColor = ConsoleColor.DarkGreen }
 		)
 		{ Direction = BarDirection.Reverse },
-		new Element<string>("Progress")
+		new Element<string>("Progress:")
 	);
 
 	/// <summary>
@@ -64,6 +83,6 @@ public class Layout
 			new Element<char>('.') { ForegroundColor = ConsoleColor.DarkGreen }
 		)
 		{ BracketOptions = BracketLayout.Percentage | BracketLayout.Bar },
-		new Element<string>("Progress")
+		new Element<string>("Progress:")
 	);
 }
