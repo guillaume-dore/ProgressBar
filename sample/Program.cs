@@ -1,4 +1,4 @@
-﻿namespace ProgressBar;
+﻿namespace ProgressBar.Sample;
 
 internal class Program
 {
