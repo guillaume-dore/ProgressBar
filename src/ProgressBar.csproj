@@ -17,9 +17,14 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageId>CLI.$(AssemblyName)</PackageId>
+		<PackageIcon>ProgressBar_Icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\img\ProgressBar_Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\LICENSE.txt">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
