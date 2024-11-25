@@ -137,18 +137,38 @@ public class ProgressBar : IDisposable, IProgress<double>
 	public void WriteLine(string? value)
 	{
 		int cursorTop = Console.CursorTop;
-		if (cursorTop == Console.BufferHeight - 1 && this._isStarted)
+		int bufferHeightToAdd = GetOutputBufferHeightToAdd(cursorTop, value);
+		if (bufferHeightToAdd > 0 && this._isStarted)
 		{
 			Console.SetCursorPosition(0, Console.BufferHeight - 1);
 			// If cursor near of the end of the buffer, keep an empty line to avoid flickering.
 			Console.Write(Environment.NewLine);
 			Console.SetCursorPosition(0, cursorTop - 1);
-			Console.Write(value?.PadRight(Console.BufferWidth));
+			Console.Write((value ?? "").PadRight(Console.BufferWidth));
 			Console.SetCursorPosition(0, Console.BufferHeight - 1);
 		}
 		else
 			Console.WriteLine(value);
 		Render();
+	}
+
+	/// <summary>
+	/// Get the number of lines to be added to the console output.
+	/// </summary>
+	/// <param name="currentCursorTop">Get current console cursor top position.</param>
+	/// <param name="value"><see cref="String"/> value to write to output stream.</param>
+	/// <returns>Number of line based on <see cref="Console.BufferWidth"/> size.</returns>
+	private int GetOutputBufferHeightToAdd(int currentCursorTop, string? value)
+	{
+		if (!this._isStarted)
+			return -1;
+
+		int valueBufferHeighCount;
+		if (value == null)
+			valueBufferHeighCount = 1;
+		else
+			valueBufferHeighCount = (int)Math.Ceiling(value.Length / (double)Console.BufferWidth);
+		return (currentCursorTop + valueBufferHeighCount) - (Console.BufferHeight - 1);
 	}
 
 	/// <summary>
