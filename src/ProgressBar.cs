@@ -142,9 +142,13 @@ public class ProgressBar : IDisposable, IProgress<double>
 		{
 			Console.SetCursorPosition(0, Console.BufferHeight - 1);
 			// If cursor near of the end of the buffer, keep an empty line to avoid flickering.
-			Console.Write(Environment.NewLine);
-			Console.SetCursorPosition(0, cursorTop - 1);
-			Console.Write((value ?? "").PadRight(Console.BufferWidth));
+			for (int i = 0; i < bufferHeightToAdd; i++)
+				Console.Write(Environment.NewLine);
+
+			Console.SetCursorPosition(0, cursorTop - bufferHeightToAdd);
+			IEnumerable<string> lines = (value ?? "").SplitByLength(Console.BufferWidth);
+			foreach (string line in lines)
+				Console.Write(line.PadRight(Console.BufferWidth));
 			Console.SetCursorPosition(0, Console.BufferHeight - 1);
 		}
 		else
