@@ -24,6 +24,7 @@ public class Layout
 	public Layout(BarLayout layout, Element<string> text, Element<string>? additionalText = null) : this(layout)
 	{
 		ArgumentNullException.ThrowIfNull(text, nameof(text));
+		ArgumentNullException.ThrowIfNullOrEmpty(text.Value, nameof(text.Value));
 		this.Text = text;
 
 		if (additionalText != null)
@@ -49,7 +50,7 @@ public class Layout
 	/// Get total length of the textual representation of the layout.
 	/// </summary>
 	/// <returns>Return total length as <see cref="int"/>.</returns>
-	public int GetTextualLengthWithSpacing()
+	internal int GetTextualLengthWithSpacing()
 	{
 		// Include minimum spacing, further add one more space per text set.
 		int textLength = 1;

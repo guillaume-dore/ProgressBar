@@ -51,6 +51,27 @@ public class ProgressBar : IDisposable, IProgress<float>
 		}
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="text"></param>
+	public void SetText(string text)
+	{
+		ArgumentNullException.ThrowIfNullOrEmpty(text, nameof(text));
+		this._layout.Text.Value = text;
+		this.Render();
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="text"></param>
+	public void SetAdditionalText(string? text)
+	{
+		this._layout.AdditionalText.Value = text;
+		this.Render();
+	}
+
 	/// <inheritdoc/>
 	public void Report(float value)
 	{
