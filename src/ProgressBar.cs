@@ -11,7 +11,7 @@ public class ProgressBar : IDisposable, IProgress<double>
 
 	private int _steps = 0;
 
-	private bool _isStarted = true;
+	private bool _isStarted = false;
 
 	/// <summary>
 	/// Initializes a new instance of <see cref="ProgressBar"/> class.<br/>
@@ -22,13 +22,8 @@ public class ProgressBar : IDisposable, IProgress<double>
 	public ProgressBar(int maxStep = 100, bool start = true)
 	{
 		this._maxSteps = maxStep;
-		if (Console.IsOutputRedirected)
-			this._isStarted = false;
-		else
-		{
-			this._isStarted = start;
-			Console.CursorVisible = !_isStarted;
-		}
+		if (!Console.IsOutputRedirected && start)
+			this.Start();
 	}
 
 	/// <summary>
