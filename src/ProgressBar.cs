@@ -3,7 +3,7 @@
 /// <summary>
 /// Provide an object to manage drawing and manipulating a console progress bar.
 /// </summary>
-public class ProgressBar : IDisposable, IProgress<double>
+public class ProgressBar : IDisposable, IProgress<float>
 {
 	private readonly Layout _layout = Layout.Default;
 
@@ -44,29 +44,27 @@ public class ProgressBar : IDisposable, IProgress<double>
 	public double Percentage
 	{
 		get => (100.0 / this._maxSteps) * this._steps;
-		set
+		private set
 		{
-			if (value < 0 || value > 100)
-				return;
 			this._steps = (int)Math.Ceiling(value / 100.0 * this._maxSteps);
 			this.Render();
 		}
 	}
 
 	/// <inheritdoc/>
-	public void Report(double value)
+	public void Report(float value)
 	{
-		if (value < 0 || value > 100)
+		if (value < 0 || value > 1)
 			return;
-		this.Percentage = value;
+		this.Percentage = value * 100;
 	}
 
-	/// <inheritdoc cref="Report(double)"/>
-	/// <param name="value"><inheritdoc cref="Report(double)" path="=/param[@name='value']"/></param>
+	/// <inheritdoc cref="Report(float)"/>
+	/// <param name="value"><inheritdoc cref="Report(float)" path="=/param[@name='value']"/></param>
 	/// <param name="updatedText">Dynamic information text to update.</param>
-	public void Report(double value, string updatedText)
+	public void Report(float value, string updatedText)
 	{
-		if (value < 0 || value > 100)
+		if (value < 0 || value > 1)
 			return;
 		this._layout.AdditionalText.Value = updatedText;
 		this.Report(value);

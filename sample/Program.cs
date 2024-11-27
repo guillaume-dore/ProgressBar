@@ -37,11 +37,7 @@ internal class Program
 		using var progressBar = new ProgressBar();
 		for (int i = 0; i < 100; i++)
 		{
-			var percentProgress = (i / 100.0) * 100;
-			if (i % 2 == 0)
-				progressBar.Percentage = percentProgress;
-			else
-				progressBar.Report(percentProgress);
+			progressBar.Report(i / 100f);
 			Thread.Sleep(100);
 		}
 	}
@@ -51,9 +47,8 @@ internal class Program
 		using var progressBar = new ProgressBar();
 		for (int i = 0; i < 100; i++)
 		{
-			var percentProgress = (i / 100.0) * 100;
 			if (i % 2 == 0)
-				progressBar.Report(percentProgress, $"step {i} of 100");
+				progressBar.Report(i / 100f, $"step {i} of 100");
 			else
 				progressBar.AddSteps(1, $"step {i} of 100");
 			Thread.Sleep(100);
@@ -75,11 +70,7 @@ internal class Program
 			if (i == 68)
 				progressBar.Start();
 
-			var percentProgress = (i / 100.0) * 100;
-			if (i % 2 == 0)
-				progressBar.Percentage = percentProgress;
-			else
-				progressBar.Report(percentProgress);
+			progressBar.Report(i / 100f);
 			Thread.Sleep(100);
 		}
 	}
@@ -89,9 +80,8 @@ internal class Program
 		using var progressBar = new ProgressBar();
 		for (int i = 0; i < 100; i++)
 		{
-			var percentProgress = (i / 100.0) * 100;
 			progressBar.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
-			progressBar.Report(percentProgress, $"step {i} of 100");
+			progressBar.Report(i / 100f, $"step {i} of 100");
 			Thread.Sleep(100);
 		}
 	}
