@@ -7,7 +7,11 @@ public class ProgressBar : IDisposable, IProgress<float>
 {
 	private readonly Layout _layout = Layout.Default;
 
+	private readonly TextWriter _out;
+
 	private readonly int _maxSteps = 100;
+
+	private readonly bool _isStandardOutputRedirected;
 
 	private int _steps = 0;
 
@@ -19,21 +23,23 @@ public class ProgressBar : IDisposable, IProgress<float>
 	/// </summary>
 	/// <param name="maxStep">Maximum step number allowed.</param>
 	/// <param name="start"><c>True</c> to start showing immediatly the progress, otherwise <c>False</c></param>
-	public ProgressBar(int maxStep = 100, bool start = true)
+	/// <param name="redirectConsoleOutput"><c>True</c> to redirect <see cref="Console"/> standard output to enable rendering progress on <see cref="Console.WriteLine(string)"/>.</param>
+	public ProgressBar(int maxStep = 100, bool start = true, bool redirectConsoleOutput = false)
 	{
+		this._out = Console.Out;
 		this._maxSteps = maxStep;
+		this._isStandardOutputRedirected = redirectConsoleOutput;
+
 		if (!Console.IsOutputRedirected && start)
 			this.Start();
 	}
 
-	/// <summary>
-	/// Initializes a new instance of <see cref="ProgressBar"/> class.<br/>
-	/// If <see cref="Console.IsOutputRedirected"/> is <c>True</c>, the progress bar will not be rendered.
-	/// </summary>
+	/// <inheritdoc cref="ProgressBar(int, bool, bool)"/>
 	/// <param name="layout">Progress bar style.</param>
-	/// <param name="maxStep">Maximum step number allowed.</param>
-	/// <param name="start"><c>True</c> to start showing immediatly the progress, otherwise <c>False</c></param>
-	public ProgressBar(Layout layout, int maxStep = 100, bool start = true) : this(maxStep, start)
+	/// <param name="maxStep"><inheritdoc cref="ProgressBar(int, bool, bool)" path="=/param[@name='maxStep']"/></param>
+	/// <param name="start"><inheritdoc cref="ProgressBar(int, bool, bool)" path="=/param[@name='start']"/></param>
+	/// <param name="redirectConsoleOutput"><c>True</c> to redirect <see cref="Console"/> standard output to enable rendering progress on <see cref="Console.WriteLine(string)"/>.</param>
+	public ProgressBar(Layout layout, int maxStep = 100, bool start = true, bool redirectConsoleOutput = false) : this(maxStep, start, redirectConsoleOutput)
 	{
 		this._layout = layout;
 	}
@@ -52,9 +58,9 @@ public class ProgressBar : IDisposable, IProgress<float>
 	}
 
 	/// <summary>
-	/// 
+	/// Set Layout primary text.
 	/// </summary>
-	/// <param name="text"></param>
+	/// <param name="text">Text to configure.</param>
 	public void SetText(string text)
 	{
 		ArgumentNullException.ThrowIfNullOrEmpty(text, nameof(text));
@@ -63,9 +69,9 @@ public class ProgressBar : IDisposable, IProgress<float>
 	}
 
 	/// <summary>
-	/// 
+	/// Set Layout secondary optional text.
 	/// </summary>
-	/// <param name="text"></param>
+	/// <param name="text">Optional text to configure.</param>
 	public void SetAdditionalText(string? text)
 	{
 		this._layout.AdditionalText.Value = text;
@@ -117,6 +123,9 @@ public class ProgressBar : IDisposable, IProgress<float>
 		if (this._isStarted || Console.IsOutputRedirected)
 			return;
 
+		if (this._isStandardOutputRedirected)
+			Console.SetOut(new ProgressWriter(this));
+
 		this._isStarted = true;
 		Console.CursorVisible = false;
 		this.Render();
@@ -133,6 +142,9 @@ public class ProgressBar : IDisposable, IProgress<float>
 		this._isStarted = false;
 		this.Unrender();
 		Console.CursorVisible = true;
+		if (this._isStandardOutputRedirected)
+			ResetConsoleOut();
+
 	}
 
 	/// <inheritdoc/>
@@ -140,6 +152,8 @@ public class ProgressBar : IDisposable, IProgress<float>
 	{
 		this.Unrender();
 		Console.CursorVisible = true;
+		if (this._isStandardOutputRedirected)
+			ResetConsoleOut();
 		GC.SuppressFinalize(this);
 	}
 
@@ -159,15 +173,15 @@ public class ProgressBar : IDisposable, IProgress<float>
 			if (cursorTop == Console.BufferHeight - 1)
 			{
 				Console.SetCursorPosition(0, Console.BufferHeight - 1);
-				Console.Write(Environment.NewLine);
+				this._out.Write(Environment.NewLine);
 				Console.SetCursorPosition(0, cursorTop - 1);
 			}
-			Console.Write(valueLines[0].PadRight(Console.BufferWidth));
+			this._out.Write(valueLines[0].PadRight(Console.BufferWidth));
 			Console.SetCursorPosition(0, Math.Min(cursorTop + 1, Console.BufferHeight - 1));
 			valueLines.RemoveAt(0);
 		}
 		else
-			Console.WriteLine(value);
+			this._out.WriteLine(value);
 
 		Render();
 		if (valueLines.Count > 0)
@@ -192,6 +206,12 @@ public class ProgressBar : IDisposable, IProgress<float>
 	}
 
 	/// <summary>
+	/// Reset standard console output stream.
+	/// </summary>
+	private void ResetConsoleOut()
+		=> Console.SetOut(this._out);
+
+	/// <summary>
 	/// Render the progress bar to the console output.
 	/// </summary>
 	private void Render()
@@ -212,7 +232,7 @@ public class ProgressBar : IDisposable, IProgress<float>
 	{
 		(int left, int top) = Console.GetCursorPosition();
 		Console.SetCursorPosition(0, Console.BufferHeight - 1);
-		Console.Write(new string(' ', Console.BufferWidth));
+		this._out.Write(new string(' ', Console.BufferWidth));
 		Console.SetCursorPosition(left, top);
 	}
 
@@ -275,15 +295,15 @@ public class ProgressBar : IDisposable, IProgress<float>
 		{
 			case LayoutPosition.Left:
 				if (this._layout.Bar.Direction == BarDirection.Forward)
-					Console.Write(percentage.PadRight(percentage.Length + 1, ' '));
+					this._out.Write(percentage.PadRight(percentage.Length + 1, ' '));
 				if (hasBarBrackets)
-					Console.Write("[");
+					this._out.Write("[");
 				DrawSection(progress, this._layout.Bar.ProgressIndicator.ForegroundColor, this._layout.Bar.ProgressIndicator.BackgroundColor);
 				DrawSection(pending, this._layout.Bar.PendingIndicator.ForegroundColor, this._layout.Bar.PendingIndicator.BackgroundColor);
 				if (hasBarBrackets)
-					Console.Write("]");
+					this._out.Write("]");
 				if (this._layout.Bar.Direction == BarDirection.Reverse)
-					Console.Write(percentage.PadLeft(percentage.Length + 1, ' '));
+					this._out.Write(percentage.PadLeft(percentage.Length + 1, ' '));
 
 				if (text != null)
 					DrawSection(text.PadLeft(text.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
@@ -297,30 +317,30 @@ public class ProgressBar : IDisposable, IProgress<float>
 					DrawSection(additionalText.PadRight(additionalText.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
 
 				if (this._layout.Bar.Direction == BarDirection.Forward)
-					Console.Write(percentage.PadRight(percentage.Length + 1, ' '));
+					this._out.Write(percentage.PadRight(percentage.Length + 1, ' '));
 				if (hasBarBrackets)
-					Console.Write("[");
+					this._out.Write("[");
 				DrawSection(progress, this._layout.Bar.ProgressIndicator.ForegroundColor, this._layout.Bar.ProgressIndicator.BackgroundColor);
 				DrawSection(pending, this._layout.Bar.PendingIndicator.ForegroundColor, this._layout.Bar.PendingIndicator.BackgroundColor);
 				if (hasBarBrackets)
-					Console.Write("]");
+					this._out.Write("]");
 				if (this._layout.Bar.Direction == BarDirection.Reverse)
-					Console.Write(percentage.PadLeft(percentage.Length + 1, ' '));
+					this._out.Write(percentage.PadLeft(percentage.Length + 1, ' '));
 				break;
 			case LayoutPosition.Center:
 				if (text != null)
 					DrawSection(text.PadRight(text.Length + 1, ' '), this._layout.Text.ForegroundColor, this._layout.Text.BackgroundColor);
 
 				if (this._layout.Bar.Direction == BarDirection.Forward)
-					Console.Write(percentage.PadRight(percentage.Length + 1, ' '));
+					this._out.Write(percentage.PadRight(percentage.Length + 1, ' '));
 				if (hasBarBrackets)
-					Console.Write("[");
+					this._out.Write("[");
 				DrawSection(progress, this._layout.Bar.ProgressIndicator.ForegroundColor, this._layout.Bar.ProgressIndicator.BackgroundColor);
 				DrawSection(pending, this._layout.Bar.PendingIndicator.ForegroundColor, this._layout.Bar.PendingIndicator.BackgroundColor);
 				if (hasBarBrackets)
-					Console.Write("]");
+					this._out.Write("]");
 				if (this._layout.Bar.Direction == BarDirection.Reverse)
-					Console.Write(percentage.PadLeft(percentage.Length + 1, ' '));
+					this._out.Write(percentage.PadLeft(percentage.Length + 1, ' '));
 
 				if (additionalText != null)
 					DrawSection(additionalText.PadLeft(additionalText.Length + 1, ' '), this._layout.AdditionalText.ForegroundColor, this._layout.AdditionalText.BackgroundColor);
@@ -335,7 +355,7 @@ public class ProgressBar : IDisposable, IProgress<float>
 		if (backgroundColor.HasValue)
 			Console.BackgroundColor = backgroundColor.Value;
 
-		Console.Write(text);
+		this._out.Write(text);
 		Console.ResetColor();
 	}
 }
