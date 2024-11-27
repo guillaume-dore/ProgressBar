@@ -1,4 +1,4 @@
-﻿namespace ProgressBar;
+﻿namespace CliProgressBar;
 
 /// <summary>
 /// Provide an object to manage drawing and manipulating a console progress bar.

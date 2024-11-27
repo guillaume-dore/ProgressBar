@@ -1,4 +1,4 @@
-﻿namespace ProgressBar.Sample;
+﻿namespace CliProgressBar.Sample;
 
 internal class Program
 {
@@ -61,9 +61,7 @@ internal class Program
 		for (int i = 0; i < 100; i++)
 		{
 			if (i == 20)
-			{
 				progressBar.Start();
-			}
 			if (i == 51)
 				progressBar.Stop();
 

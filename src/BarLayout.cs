@@ -1,4 +1,4 @@
-﻿namespace ProgressBar;
+﻿namespace CliProgressBar;
 
 /// <summary>
 /// Initializes a new instance of <see cref="BarLayout"/> class.<br/>

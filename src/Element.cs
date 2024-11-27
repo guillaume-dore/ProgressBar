@@ -1,4 +1,4 @@
-﻿namespace ProgressBar;
+﻿namespace CliProgressBar;
 
 /// <summary>
 /// Define an element of the progress bar with his value and his color.

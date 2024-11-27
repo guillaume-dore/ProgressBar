@@ -1,4 +1,4 @@
-﻿namespace ProgressBar;
+﻿namespace CliProgressBar;
 
 /// <summary>
 /// Define the global layout of the progress bar.

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProgressBar.Sample", "sample\ProgressBar.Sample.csproj", "{79296CB0-26D1-47A8-9929-4086DAB14436}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CliProgressBar.Sample", "sample\CliProgressBar.Sample.csproj", "{79296CB0-26D1-47A8-9929-4086DAB14436}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProgressBar", "src\ProgressBar.csproj", "{2D56E4F1-AF3F-4BBA-B86C-6431496AFC7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CliProgressBar", "src\CliProgressBar.csproj", "{2D56E4F1-AF3F-4BBA-B86C-6431496AFC7F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{D56C9DE5-07E0-4F65-A25E-7A9C175BD57F}"
 EndProject
