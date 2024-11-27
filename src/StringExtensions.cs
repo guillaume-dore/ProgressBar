@@ -1,4 +1,4 @@
-﻿namespace ProgressBar;
+﻿namespace CliProgressBar;
 
 internal static class StringExtensions
 {
