@@ -10,6 +10,7 @@ internal class Program
 		AdditionalText();
 		PauseAndRestartProgressBar();
 		WithConsoleOutputText();
+		WithConsoleOutputTextRedirected();
 	}
 
 	static void DefaultLayout()
@@ -79,6 +80,17 @@ internal class Program
 		for (int i = 0; i < 100; i++)
 		{
 			progressBar.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
+			progressBar.Report(i / 100f, $"step {i} of 100");
+			Thread.Sleep(100);
+		}
+	}
+
+	static void WithConsoleOutputTextRedirected()
+	{
+		using var progressBar = new ProgressBar(redirectConsoleOutput: true);
+		for (int i = 0; i < 100; i++)
+		{
+			Console.WriteLine($"Line {i + 1}. Console left: {Console.GetCursorPosition().Left}, Console top: {Console.GetCursorPosition().Top}, Buffer Height: {Console.BufferHeight}, Window Height: {Console.WindowHeight}");
 			progressBar.Report(i / 100f, $"step {i} of 100");
 			Thread.Sleep(100);
 		}
