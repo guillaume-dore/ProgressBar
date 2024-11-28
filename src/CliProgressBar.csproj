@@ -16,8 +16,9 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageReadmeFile>README.nuget.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-		<PackageId>CLI.$(AssemblyName)</PackageId>
+		<PackageId>CLI.ProgressBar</PackageId>
 		<PackageIcon>ProgressBar_Icon.png</PackageIcon>
+		<AssemblyName>CLI.ProgressBar</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
