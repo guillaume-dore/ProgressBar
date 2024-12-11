@@ -3,13 +3,11 @@ A simple progress bar for Console applications, cross platform ready, built on t
 
 ## Setup
 
-Firstly, install [CLI.ProgressBar](https://www.nuget.org/packages/CLI.ProgressBar/) package running the following command line:
+Install [CLI.ProgressBar](https://www.nuget.org/packages/CLI.ProgressBar/) package running the following command line:
 
 ```bash
 dotnet add package CLI.ProgressBar
 ```
-
-The progress bar come with many possibilities of personalization, check the [sample](https://github.com/guillaume-dore/ProgressBar/blob/master/sample/Program.cs) project to see what is possible.
 
 ## Usage
 
@@ -18,11 +16,13 @@ In order to use the progress bar include the following namespace:
 using CliProgressBar;
 ```
 
+The progress bar come with many possibilities of personalization, check the [sample](https://github.com/guillaume-dore/ProgressBar/blob/master/sample/Program.cs) project to see what is possible.
+
 ### Examples:
 
 #### Default Progress Bar
 
-![Basic Usage](img/progress_simple.gif)
+![Basic Usage](https://raw.githubusercontent.com/guillaume-dore/ProgressBar/master/img/progress_simple.gif)
 
 ```csharp
 using var progressBar = new ProgressBar();
@@ -35,7 +35,7 @@ for (int i = 0; i < 100; i++)
 
 #### Variant Progress Bar
 
-![Variant Usage](img/progress_variant.gif)
+![Variant Usage](https://raw.githubusercontent.com/guillaume-dore/ProgressBar/master/img/progress_variant.gif)
 
 ```csharp
 using var progressBar = new ProgressBar(Layout.Unix);
@@ -48,7 +48,7 @@ for (int i = 0; i < 100; i++)
 
 #### Progress Bar with console output
 
-![Output Usage](img/progress_text.gif)
+![Output Usage](https://raw.githubusercontent.com/guillaume-dore/ProgressBar/master/img/progress_text.gif)
 
 ```csharp
 using var progressBar = new ProgressBar();
@@ -92,6 +92,8 @@ public void SetAdditionalText(string? text)
 
 ### Configuration:
 
+#### Constructor
+
 The ```ProgressBar``` is highly customizable, you can set the following properties during the object initialization to adapt it to your needs:
 
 Parameter | Type | Default Value | Description |
@@ -100,6 +102,10 @@ layout | **Layout** |```Layout.Default```|The layout object is provided by the p
 maxStep|**int**|```100```|Maximum step number allowed.|
 start|**bool**|```True```|```True``` to start showing immediatly the progress, otherwise ```False```.|
 redirectConsoleOutput|**bool**|```False```|Define if  output should be redirected. Enable the progress bar rendering to manage redrawing on ```Console.WriteLine(string)``` instructions. It redirect the Console output implementing an internal intermediate ```TextWriter```. |
+
+#### Layout
+
+TODO
 
 ## Contributing
 
