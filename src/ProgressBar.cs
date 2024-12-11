@@ -150,10 +150,7 @@ public class ProgressBar : IDisposable, IProgress<float>
 	/// <inheritdoc/>
 	public void Dispose()
 	{
-		this.Unrender();
-		Console.CursorVisible = true;
-		if (this._isStandardOutputRedirected)
-			ResetConsoleOut();
+		this.Stop();
 		GC.SuppressFinalize(this);
 	}
 
