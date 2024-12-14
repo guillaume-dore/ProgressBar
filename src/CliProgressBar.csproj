@@ -5,17 +5,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Title>Console Progress Bar</Title>
-		<Authors>guillaume-dore</Authors>
+		<Title>Cross platform progress bar</Title>
 		<Description>A cross-platform customizable bottom fixed console progress bar.</Description>
-		<VersionPrefix>1.0.3</VersionPrefix>
-		<PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+		<Authors>Guillaume Doré</Authors>
+		<VersionPrefix>1.0.4</VersionPrefix>
 		<RepositoryUrl>https://github.com/guillaume-dore/ProgressBar</RepositoryUrl>
-		<PackageTags>c#;net8.0</PackageTags>
+		<PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+		<PackageTags>c#;net8.0;console;progress;progressbar</PackageTags>
 		<IncludeSymbols>True</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<PackageReadmeFile>README.nuget.md</PackageReadmeFile>
-		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<PackageId>CLI.ProgressBar</PackageId>
 		<PackageIcon>ProgressBar_Icon.png</PackageIcon>
 		<AssemblyName>CLI.ProgressBar</AssemblyName>
@@ -26,11 +27,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="..\LICENSE.txt">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="..\README.nuget.md">
+    <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

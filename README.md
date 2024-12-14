@@ -1,4 +1,7 @@
-﻿# CLI.ProgressBar [![NuGet](https://img.shields.io/nuget/v/CLI.ProgressBar.svg)](https://www.nuget.org/packages/CLI.ProgressBar/) [![NuGet](https://img.shields.io/nuget/dt/CLI.ProgressBar.svg)](https://www.nuget.org/packages/CLI.ProgressBar/) ![Issues](https://img.shields.io/github/issues/guillaume-dore/ProgressBar) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+﻿# CLI.ProgressBar 
+
+[![NuGet](https://img.shields.io/nuget/v/CLI.ProgressBar.svg)](https://www.nuget.org/packages/CLI.ProgressBar/) [![Downloads](https://img.shields.io/nuget/dt/CLI.ProgressBar.svg)](https://www.nuget.org/packages/CLI.ProgressBar/) ![Issues](https://img.shields.io/github/issues/guillaume-dore/ProgressBar) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A simple progress bar for Console applications, cross platform ready, built on top of .NET 8.0 without any external dependency.
 
 ## Setup
