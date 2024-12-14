@@ -56,7 +56,7 @@ for (int i = 0; i < 100; i++)
 }
 ```
 
-The progress bar come with more possibilities of customization, check the [sample](https://github.com/guillaume-dore/ProgressBar/blob/master/sample/Program.cs) project or the [Customization](##customization) section to see what is possible.
+The progress bar come with more possibilities of customization, check the [sample](https://github.com/guillaume-dore/ProgressBar/blob/master/sample/Program.cs) project or the [Customization](#customization) section to see what is possible.
 
 ### Update progress:
 
