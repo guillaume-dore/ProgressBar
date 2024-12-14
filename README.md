@@ -15,7 +15,6 @@ In order to use the progress bar include the following namespace:
 ```csharp 
 using CliProgressBar;
 ```
-&nbsp;
 
 ***Default Progress Bar:***
 
@@ -29,7 +28,6 @@ for (int i = 0; i < 100; i++)
 	Thread.Sleep(100);
 }
 ```
-&nbsp;
 
 ***Variant Progress Bar:*** 
 
@@ -43,7 +41,6 @@ for (int i = 0; i < 100; i++)
 	Thread.Sleep(100);
 }
 ```
-&nbsp;
 
 ***Progress Bar with console output:***
 
